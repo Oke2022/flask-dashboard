@@ -1,0 +1,20 @@
+
+# templates/nginx.conf.j2
+server {
+    listen 80;
+    server_name {{ ansible_default_ipv4.address }};
+
+    location / {
+        include proxy_params;
+        proxy_pass http://unix:{{ app_dir }}/{{ app_name }}.sock;
+    }
+
+    location /static {
+        alias {{ app_dir }}/static;
+    }
+
+    # Security headers
+    add_header X-Frame-Options "SAMEORIGIN" always;
+    add_header X-XSS-Protection "1; mode=block" always;
+    add_header X-Content-Type-Options "nosniff" always;
+}
